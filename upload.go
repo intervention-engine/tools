@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/codegangsta/cli"
-	"gitlab.mitre.org/intervention-engine/hdsfhir"
+	"github.com/intervention-engine/hdsfhir"
 	"io/ioutil"
 	"os"
 )
