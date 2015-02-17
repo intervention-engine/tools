@@ -30,7 +30,10 @@ func main() {
 			patientIds := GetPatientIds(fhirUrl + "/Patient")
 			r := rand.New(rand.NewSource(99))
 			for _, id := range patientIds {
-				UploadRiskAssessment(fhirUrl+"/Observation", fhirUrl+"/Patient", id, r)
+				for week := 0; week < 24; week++ {
+					datetime := time.Now().Add(-time.Hour*168*time.Duration(week))
+					UploadRiskAssessment(fhirUrl+"/Observation", fhirUrl+"/Patient", id, datetime, r)
+				}
 			}
 		}
 	}
@@ -57,8 +60,8 @@ func GetPatientIds(patientUrl string) []string {
 	return patientIds
 }
 
-func UploadRiskAssessment(observationUrl, patientUrl, patientId string, r *rand.Rand) {
-	observation := models.Observation{Reliability: "ok", Status: "final"}
+func UploadRiskAssessment(observationUrl, patientUrl, patientId string, datetime time.Time, r *rand.Rand) {
+	observation := &models.Observation{Reliability: "ok", Status: "final"}
 	randomRisk := r.Intn(4)
 	if randomRisk == 0 {
 		randomRisk = 1
@@ -67,7 +70,7 @@ func UploadRiskAssessment(observationUrl, patientUrl, patientId string, r *rand.
 	cc := models.CodeableConcept{}
 	cc.Coding = []models.Coding{models.Coding{System: "http://loinc.org", Code: "75492-9"}}
 	observation.Name = cc
-	observation.AppliesDateTime = models.FHIRDateTime{Precision: models.Timestamp, Time: time.Now()}
+	observation.AppliesDateTime = models.FHIRDateTime{Precision: models.Timestamp, Time: datetime}
 	observation.Subject = models.Reference{Reference: patientUrl + "/" + patientId}
 	json, _ := json.Marshal(observation)
 	body := bytes.NewReader(json)
