@@ -22,20 +22,33 @@ func main() {
 			Name:  "json, j",
 			Usage: "Path to the directory of JSON files",
 		},
+		cli.StringFlag{
+			Name:  "single, s",
+			Usage: "Path to the a single JSON file",
+		},
 	}
 	app.Action = func(c *cli.Context) {
 		fhirUrl := c.String("fhir")
 		path := c.String("json")
-		if fhirUrl == "" || path == "" {
+		singlePath := c.String("single")
+		if fhirUrl == "" || (path == "" && singlePath == "") {
 			fmt.Println("You must provide a FHIR URL and path to JSON files")
 		} else {
-			files, err := ioutil.ReadDir(path)
-			if err != nil {
-				panic("Couldn't list the directory")
+			var fileNames []string
+			if path != "" {
+				files, err := ioutil.ReadDir(path)
+				if err != nil {
+					panic("Couldn't read the directory" + err.Error())
+				}
+				for _, file := range files {
+					fileNames = append(fileNames, path+"/"+file.Name())
+				}
+			} else {
+				fileNames = []string{singlePath}
 			}
-			for _, file := range files {
+			for _, file := range fileNames {
 				patient := &hdsfhir.Patient{}
-				jsonBlob, err := ioutil.ReadFile(path + "/" + file.Name())
+				jsonBlob, err := ioutil.ReadFile(file)
 				if err != nil {
 					panic("Couldn't read the JSON file" + err.Error())
 				}
