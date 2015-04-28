@@ -66,12 +66,12 @@ func UploadRiskAssessment(observationUrl, patientUrl, patientId string, datetime
 	if randomRisk == 0 {
 		randomRisk = 1
 	}
-	observation.ValueQuantity = models.Quantity{Value: float64(randomRisk)}
+	observation.ValueQuantity = &models.Quantity{Value: float64(randomRisk)}
 	cc := models.CodeableConcept{}
 	cc.Coding = []models.Coding{models.Coding{System: "http://loinc.org", Code: "75492-9"}}
-	observation.Name = cc
-	observation.AppliesDateTime = models.FHIRDateTime{Precision: models.Timestamp, Time: datetime}
-	observation.Subject = models.Reference{Reference: patientUrl + "/" + patientId}
+	observation.Name = &cc
+	observation.AppliesPeriod = &models.Period{Start: &models.FHIRDateTime{Precision: models.Timestamp, Time: datetime}, End: &models.FHIRDateTime{Precision: models.Timestamp, Time: datetime}}
+	observation.Subject = &models.Reference{Reference: patientUrl + "/" + patientId}
 	json, _ := json.Marshal(observation)
 	body := bytes.NewReader(json)
 	_, err := http.Post(observationUrl, "application/json+fhir", body)
