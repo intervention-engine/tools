@@ -6,6 +6,7 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/intervention-engine/hdsfhir"
 	"io/ioutil"
+	"time"
 	"os"
 )
 
@@ -14,6 +15,10 @@ func main() {
 	app.Name = "upload"
 	app.Usage = "Convert health-data-standards JSON to FHIR JSON and upload it to a FHIR Server"
 	app.Flags = []cli.Flag{
+		cli.IntFlag{
+			Name:  "offset, o",
+			Usage: "How many years to offset dates by",
+		},
 		cli.StringFlag{
 			Name:  "fhir, f",
 			Usage: "URL for the FHIR server",
@@ -28,6 +33,7 @@ func main() {
 		},
 	}
 	app.Action = func(c *cli.Context) {
+		offset := c.Int("offset")
 		fhirUrl := c.String("fhir")
 		path := c.String("json")
 		singlePath := c.String("single")
@@ -53,6 +59,23 @@ func main() {
 					panic("Couldn't read the JSON file" + err.Error())
 				}
 				json.Unmarshal(jsonBlob, patient)
+				patient.UnixBirthTime = time.Unix(patient.UnixBirthTime,0).AddDate(offset,0,0).Unix()
+
+        for _,cond := range patient.Conditions {
+          cond.StartTime = time.Unix(cond.StartTime, 0).AddDate(offset,0,0).Unix()
+        }
+        for _,enc := range patient.Encounters {
+          enc.StartTime = time.Unix(enc.StartTime, 0).AddDate(offset,0,0).Unix()
+        }
+        for _,med := range patient.Medications {
+          med.StartTime = time.Unix(med.StartTime, 0).AddDate(offset,0,0).Unix()
+        }
+        for _,vit := range patient.VitalSigns {
+          vit.StartTime = time.Unix(vit.StartTime, 0).AddDate(offset,0,0).Unix()
+        }
+        for _,proc := range patient.Procedures {
+          proc.StartTime = time.Unix(proc.StartTime, 0).AddDate(offset,0,0).Unix()
+        }
 				patient.PostToFHIRServer(fhirUrl)
 			}
 
