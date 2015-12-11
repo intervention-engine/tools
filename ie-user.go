@@ -183,5 +183,13 @@ func userExists(username string, collection *mgo.Collection) bool {
 }
 
 func printUsage() {
-	fmt.Println("Usage definition goes here.")
+	usageStatement := `Usage: command <arguments> (function)
+	------
+	add <username> <password> (add single user)
+	add_file <filepath> (add users from comma separated file)
+	remove <username> (remove single user)
+	remove_all (remove all users)
+	change_pass <username> <password> (change user's password)`
+
+	fmt.Println(usageStatement)
 }
