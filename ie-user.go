@@ -4,17 +4,23 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/intervention-engine/ie/models"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"os"
-	"strings"
 )
 
 func main() {
 
 	flag.Parse()
 	args := flag.Args()
+
+	if len(args) == 0 {
+		printUsage()
+		return
+	}
 
 	command := args[0]
 
