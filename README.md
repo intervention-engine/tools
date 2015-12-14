@@ -26,3 +26,14 @@ Usage instructions:
 	   --single, -s 	Path to the a single JSON file
 	   --help, -h		show help
 	   --version, -v	print the version
+	   
+## ie-user
+
+	$ ./ie-user
+	Usage: command <arguments> (function)
+		------
+		add <username> <password> (add single user)
+		add_file <filepath> (add users from comma separated file)
+		remove <username> (remove single user)
+		remove_all (remove all users)
+		change_pass <username> <password> (change user's password)
