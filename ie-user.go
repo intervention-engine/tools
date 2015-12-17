@@ -102,10 +102,10 @@ func addUser(username, password string) {
 
 func loadUsersFromFile(filepath string) {
 	file, err := os.Open(filepath)
-	defer file.Close()
 	if err != nil {
 		panic(err)
 	}
+	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
