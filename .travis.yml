@@ -1,10 +1,10 @@
 sudo: false
 language: go
 script:
-  - go build generate.go
-  - go build ie-user.go
-  - go build upload_fhir.go
-  - go build upload_hds.go 
+  - go test ./cmd/generate
+  - go test ./cmd/ieuser
+  - go test ./cmd/uploadfhir
+  - go test ./cmd/uploadhds 
 
 branches:
   only:
