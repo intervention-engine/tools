@@ -1,84 +1,27 @@
-Tools
-=====
+Tools [![Build Status](https://travis-ci.org/intervention-engine/tools.svg?branch=master)](https://travis-ci.org/intervention-engine/tools)
+===========================================================================================================================================
 
-Simple tools used by the Intervention Engine project to work with data.
+The *tools* repository contains command-line tools that are helpful (or sometimes necessary) for the [Intervention Engine](https://github.com/intervention-engine/ie) project. These include tools for managing Intervention Engine users, generating and uploading synthetic patient data, uploading FHIR bundles, and converting and uploading Health Data Standards (HDS) records.
 
-Installation
-------------
+Building and Running tools Locally
+----------------------------------
 
-This project currently uses Go 1.5.3 and is built using the Go toolchain.
+Intervention Engine is a stack of tools and technologies. For information on installing and running the full stack, please see [Building and Running the Intervention Engine Stack in a Development Environment](https://github.com/intervention-engine/ie/blob/master/docs/dev_install.md).
 
-To install Go, follow the instructions found at the [Go website](http://golang.org/doc/install).
+For information related specifically to building and running the tools in this repository (*tools*), please refer to the following sections in the above guide. Note that most of these tools require the ie server (or a fhir server) to be running.
 
-Following standard Go practices, you should clone this project to:
-
-```
-$GOPATH/src/github.com/intervention-engine/tools
-```
-
-For example:
-
-```
-cd $GOPATH/src/github.com/intervention-engine
-git clone https://github.com/intervention-engine/tools.git
-cd $GOPATH/src/github.com/intervention-engine/tools
-```
-
-If you plan to install the tools to `$GOPATH/bin`, you may want to set the *GOBIN* environmental variable and add it to your path (perhaps in your `~/.profile` or `~.bashrc`\)
-
-```
-export GOBIN=$GOPATH/bin
-export PATH=$PATH:$GOBIN
-```
+-	(Prerequisite) [Install Git](https://github.com/intervention-engine/ie/blob/master/docs/dev_install.md#install-git)
+-	(Prerequisite) [Install Go](https://github.com/intervention-engine/ie/blob/master/docs/dev_install.md#install-go)
+-	(Prerequisite for *ieuser*) [Install MongoDB](https://github.com/intervention-engine/ie/blob/master/docs/dev_install.md#install-mongodb)
+-	(Prerequisite for *ieuser*) [Run MongoDB](https://github.com/intervention-engine/ie/blob/master/docs/dev_install.md#run-mongodb)
+-	(Prerequisite) [Clone tools Repository](https://github.com/intervention-engine/ie/blob/master/docs/dev_install.md#clone-tools-repository)
 
 Go only allows for one `main` function per package, therefore the *tools* repo puts each tool into a separate package. This makes building and installing a little more difficult, but allows us to have all the tools in a single repo.
-
-generate
---------
-
-The *generate* tool is used to generate synthetic patient records as FHIR DSTU2 resources and post them to a FHIR DSTU2 server. These synthetic records include patient info, vitals, conditions, medications, and encounters. Due to Intervention Engine's prominent use case, all synthetic records are tuned to a geriatric population.
-
-To install *generate* to `$GOPATH/bin`:
-
-```
-$ cd $GOPATH/src/github.com/intervention-engine/tools/cmd/generate
-$ go get
-$ go install
-```
-
-To build a local *generate* executable:
-
-```
-$ cd $GOPATH/src/github.com/intervention-engine/tools/cmd/generate
-$ go get
-$ go build
-```
-
-To use a local *generate* executable:
-
-```
-$ ./generate --help
-Usage of ./generate:
-  -fhirURL string
-    	URL for the FHIR server
-  -n int
-    	Number of patients to generate (default 100)
-```
 
 ieuser
 ------
 
-The *ieuser* tool is used to add, remove, and edit Intervention Engine users in the database. In order to use this tool, the MongoDB database must be running.
-
-To install *ieuser* to `$GOPATH/bin`:
-
-```
-$ cd $GOPATH/src/github.com/intervention-engine/tools/cmd/ieuser
-$ go get
-$ go install
-```
-
-To build a local *ieuser* executable:
+The *ieuser* tool is used to add, remove, and edit Intervention Engine users in the database. In order to use this tool, the MongoDB database must be running. Before you can run the *ieuser* tool, you must install its dependencies via `go get` and build the `ieuser` executable:
 
 ```
 $ cd $GOPATH/src/github.com/intervention-engine/tools/cmd/ieuser
@@ -86,33 +29,37 @@ $ go get
 $ go build
 ```
 
-To use a local *ieuser* executable:
+The following example uses the *ieuser* executable to create the user *bob* with the password *mypassword*:
 
 ```
-$ ./ie-user
-Usage: command <arguments> (function)
-    ------
-    add <username> <password> (add single user)
-    add_file <filepath> (add users from comma separated file)
-    remove <username> (remove single user)
-    remove_all (remove all users)
-    change_pass <username> <password> (change user's password)
+$ ./ieuser add bob mypassword
 ```
+
+To get usage information, run `ieuser` with no arguments.
+
+generate
+--------
+
+The *generate* tool is used to generate synthetic patient records as FHIR DSTU2 resources and post them to a FHIR DSTU2 server. These synthetic records include patient info, vitals, conditions, medications, and encounters. Due to Intervention Engine's prominent use case, all synthetic records are tuned to a geriatric population. Before you can run the *generate* tool, you must install its dependencies via `go get` and build the `generate` executable:
+
+```
+$ cd $GOPATH/src/github.com/intervention-engine/tools/cmd/generate
+$ go get
+$ go build
+```
+
+The *generate* tool takes a `-fhirURL` flag to indicate the FHIR server to upload the patients to, as well as a `-n` flag to indicate the number of patients to generate (with the default being 100).
+
+```
+$ ./generate -fhirURL http://localhost:3001 -n 20
+```
+
+To get usage information, run `generate` with the `-help` flag.
 
 uploadfhir
 ----------
 
-The *uploadfhir* tool can be used to upload a FHIR DSTU2 bundle to a FHIR DSTU2 server.
-
-To install *uploadfhir* to `$GOPATH/bin`:
-
-```
-$ cd $GOPATH/src/github.com/intervention-engine/tools/cmd/uploadfhir
-$ go get
-$ go install
-```
-
-To build a local *uploadfhir* executable:
+The *uploadfhir* tool can be used to upload a FHIR DSTU2 bundle to a FHIR DSTU2 server. Before you can run the *uploadfhir* tool, you must install its dependencies via `go get` and build the `uploadfhir` executable:
 
 ```
 $ cd $GOPATH/src/github.com/intervention-engine/tools/cmd/uploadfhir
@@ -120,31 +67,18 @@ $ go get
 $ go build
 ```
 
-To use a local *uploadfhir* executable:
+The *uploadfhir* tool takes a `-fhirURL` flag to indicate the FHIR server to upload the patients to, as well as a `-bundle` flag to indicate the path to a FHIR DSTU2 bundle to upload.
 
 ```
-$ ./uploadfhir --help
-Usage of ./uploadfhir:
-  -bundle string
-    	Path to the a single JSON file containing a bundle to upload
-  -fhirURL string
-    	URL for the FHIR server
+$ ./uploadfhir -fhirURL http://localhost:3001 -bundle /path/to/some/bundle.json
 ```
+
+To get usage information, run `uploadfhir` with the `-help` flag.
 
 uploadhds
 ---------
 
-The *uploadhds* tool can be used to convert Health Data Standards (HDS) records to FHIR DSTU2 and post them to a FHIR DSTU2 server.
-
-To install *uploadhds* to `$GOPATH/bin`:
-
-```
-$ cd $GOPATH/src/github.com/intervention-engine/tools/cmd/uploadhds
-$ go get
-$ go install
-```
-
-To build a local *uploadhds* executable:
+The *uploadhds* tool can be used to convert Health Data Standards (HDS) records to FHIR DSTU2 and post them to a FHIR DSTU2 server. Before you can run the *uploadhds* tool, you must install its dependencies via `go get` and build the `uploadhds` executable:
 
 ```
 $ cd $GOPATH/src/github.com/intervention-engine/tools/cmd/uploadhds
@@ -152,27 +86,21 @@ $ go get
 $ go build
 ```
 
-To use a local *uploadhds* executable:
+The *uploadhds* tool takes a `-fhir` flag to indicate the FHIR server to upload the patients to. The *uploadhds* tool can upload a whole directory of HDS patients, indicated by the `-json` flag, or it can upload a single HDS patient, indicated by the `-single` flag. In addition, the *uploadhds* tool can offset dates by a specified number of years, indicated by the `offset` flag (potentially useful for testing).
 
 ```
-$ ./uploadhds --help
-NAME:
- upload - Convert health-data-standards JSON to FHIR JSON and upload it to a FHIR Server
-
-USAGE:
- uploadhds [global options] command [command options] [arguments...]
-
-VERSION:
- 0.0.0
-
-COMMANDS:
- help, h    Shows a list of commands or help for one command
-
-GLOBAL OPTIONS:
- --offset, -o "0"   How many years to offset dates by
- --fhir, -f         URL for the FHIR server
- --json, -j         Path to the directory of JSON files
- --single, -s   Path to the a single JSON file
- --help, -h     show help
- --version, -v  print the version
+$ ./uploadhds -fhir http://localhost:3001 -single /path/to/some/hds/patient.json
 ```
+
+To get usage information, run `uploadhds` with the `-help` flag.
+
+License
+-------
+
+Copyright 2016 The MITRE Corporation
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
