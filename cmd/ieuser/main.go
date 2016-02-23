@@ -30,46 +30,51 @@ func main() {
 		printUsage()
 		return
 	case "add":
-		if len(args) == 3 {
+		if len(args) == 4 {
 			username := args[1]
 			password := args[2]
-			addUser(username, password)
+			host := args[3]
+			addUser(username, password, host)
 		} else {
 			fmt.Println("Invalid number of arguments for 'add' command.")
 			printUsage()
 			return
 		}
 	case "add_file":
-		if len(args) == 2 {
+		if len(args) == 3 {
 			filepath := args[1]
-			loadUsersFromFile(filepath)
+			host := args[2]
+			loadUsersFromFile(filepath, host)
 		} else {
 			fmt.Println("Invalid number of arguments for 'add_file' command.")
 			printUsage()
 			return
 		}
 	case "remove":
-		if len(args) == 2 {
+		if len(args) == 3 {
 			username := args[1]
-			removeUser(username)
+			host := args[2]
+			removeUser(username, host)
 		} else {
 			fmt.Println("Invalid number of arguments for 'remove' command.")
 			printUsage()
 			return
 		}
 	case "remove_all":
-		if len(args) == 1 {
-			removeAllUsers()
+		if len(args) == 2 {
+			host := args[1]
+			removeAllUsers(host)
 		} else {
 			fmt.Println("Invalid number of arguments for 'remove_all' command.")
 			printUsage()
 			return
 		}
 	case "change_pass":
-		if len(args) == 3 {
+		if len(args) == 4 {
 			username := args[1]
 			password := args[2]
-			updatePassword(username, password)
+			host := args[3]
+			updatePassword(username, password, host)
 		} else {
 			fmt.Println("Invalid number of arguments for 'change_pass' command.")
 			printUsage()
@@ -78,14 +83,14 @@ func main() {
 	}
 }
 
-func addUser(username, password string) {
+func addUser(username, password, host string) {
 	newuser := &models.User{
 		Username: username,
 		ID:       bson.NewObjectId(),
 	}
 	newuser.SetPassword(password)
 
-	userCollection := getUserCollection()
+	userCollection := getUserCollection(host)
 
 	if userExists(username, userCollection) {
 		fmt.Printf("User %s already exists.\n", username)
@@ -100,7 +105,7 @@ func addUser(username, password string) {
 	}
 }
 
-func loadUsersFromFile(filepath string) {
+func loadUsersFromFile(filepath, host string) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		panic(err)
@@ -113,12 +118,12 @@ func loadUsersFromFile(filepath string) {
 		userentry := strings.Split(rawentry, ",")
 		username := userentry[0]
 		password := userentry[1]
-		addUser(username, password)
+		addUser(username, password, host)
 	}
 }
 
-func removeUser(username string) {
-	userCollection := getUserCollection()
+func removeUser(username, host string) {
+	userCollection := getUserCollection(host)
 
 	if userExists(username, userCollection) {
 		err := userCollection.Remove(bson.M{"username": username})
@@ -132,12 +137,12 @@ func removeUser(username string) {
 	}
 }
 
-func removeAllUsers() {
+func removeAllUsers(host string) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("YOU ARE ABOUT TO REMOVE ALL USERS. ENTER 'Y' TO CONTINUE: ")
 	resp, _ := reader.ReadString('\n')
 	if resp == "Y\n" {
-		userCollection := getUserCollection()
+		userCollection := getUserCollection(host)
 		userCollection.DropCollection()
 		fmt.Println("Successfully removed all users.")
 	} else {
@@ -146,8 +151,8 @@ func removeAllUsers() {
 
 }
 
-func updatePassword(username, password string) {
-	userCollection := getUserCollection()
+func updatePassword(username, password, host string) {
+	userCollection := getUserCollection(host)
 
 	if userExists(username, userCollection) {
 		updated := &models.User{
@@ -166,13 +171,9 @@ func updatePassword(username, password string) {
 	}
 }
 
-func getUserCollection() *mgo.Collection {
-	mongoHost := os.Getenv("MONGO_PORT_27017_TCP_ADDR")
-	if mongoHost == "" {
-		mongoHost = "localhost"
-	}
+func getUserCollection(host string) *mgo.Collection {
 
-	session, err := mgo.Dial(mongoHost)
+	session, err := mgo.Dial(host)
 	if err != nil {
 		panic(err)
 	}
@@ -191,11 +192,11 @@ func userExists(username string, collection *mgo.Collection) bool {
 func printUsage() {
 	usageStatement := `Usage: command <arguments> (function)
 	------
-	add <username> <password> (add single user)
-	add_file <filepath> (add users from comma separated file)
-	remove <username> (remove single user)
-	remove_all (remove all users)
-	change_pass <username> <password> (change user's password)`
+	add <username> <password> <mongo ip> (add single user)
+	add_file <filepath> <mongo ip>(add users from comma separated file)
+	remove <username> <mongo ip> (remove single user)
+	remove_all <mongo ip> (remove all users)
+	change_pass <username> <password> <mongo ip> (change user's password)`
 
 	fmt.Println(usageStatement)
 }
