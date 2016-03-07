@@ -30,7 +30,11 @@ func main() {
 		printUsage()
 		return
 	case "add":
-		if len(args) == 4 {
+		if len(args) == 3 {
+			username := args[1]
+			password := args[2]
+			addUser(username, password, "localhost")
+		} else if len(args) == 4 {
 			username := args[1]
 			password := args[2]
 			host := args[3]
@@ -41,7 +45,10 @@ func main() {
 			return
 		}
 	case "add_file":
-		if len(args) == 3 {
+		if len(args) == 2 {
+			filepath := args[1]
+			loadUsersFromFile(filepath, "localhost")
+		} else if len(args) == 3 {
 			filepath := args[1]
 			host := args[2]
 			loadUsersFromFile(filepath, host)
@@ -51,7 +58,10 @@ func main() {
 			return
 		}
 	case "remove":
-		if len(args) == 3 {
+		if len(args) == 2 {
+			username := args[1]
+			removeUser(username, "localhost")
+		} else if len(args) == 3 {
 			username := args[1]
 			host := args[2]
 			removeUser(username, host)
@@ -61,7 +71,9 @@ func main() {
 			return
 		}
 	case "remove_all":
-		if len(args) == 2 {
+		if len(args) == 1 {
+			removeAllUsers("localhost")
+		} else if len(args) == 2 {
 			host := args[1]
 			removeAllUsers(host)
 		} else {
@@ -70,7 +82,11 @@ func main() {
 			return
 		}
 	case "change_pass":
-		if len(args) == 4 {
+		if len(args) == 3 {
+			username := args[1]
+			password := args[2]
+			updatePassword(username, password, "localhost")
+		} else if len(args) == 4 {
 			username := args[1]
 			password := args[2]
 			host := args[3]
@@ -196,7 +212,9 @@ func printUsage() {
 	add_file <filepath> <mongo ip>(add users from comma separated file)
 	remove <username> <mongo ip> (remove single user)
 	remove_all <mongo ip> (remove all users)
-	change_pass <username> <password> <mongo ip> (change user's password)`
+	change_pass <username> <password> <mongo ip> (change user's password)
+	------
+	<mongo ip> is optional in all cases. defaults to "localhost"`
 
 	fmt.Println(usageStatement)
 }
