@@ -1,0 +1,10 @@
+sudo: false
+language: go
+go:
+- 1.5.3
+branches:
+  only:
+  - master
+notifications:
+  slack:
+    secure: eCPvNyvRUKpbw5pdme7FBMFMYFIopJbdX7Mq5udNsrU2qtFhfYgb++EAQDmICQf0XihbMR75kBZuexBQytucvoId+whWdjsO+cGyR+w2a+lOmDZMNF7LJiLes9zvxZxYbi8BAB3JyrTvkDSh53OviuhjyE53lxg1fJaqxAfkhOA=
