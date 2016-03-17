@@ -1,12 +1,9 @@
 sudo: false
 language: go
 go:
-- 1.5.3
-script:
-- go test ./cmd/generate
-- go test ./cmd/ieuser
-- go test ./cmd/uploadfhir
-- go test ./cmd/uploadhds
+- 1.6
+script: go test $(go list ./... | grep -v /vendor/)
+install: true
 branches:
   only:
   - master
