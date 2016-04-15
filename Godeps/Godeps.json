@@ -37,8 +37,8 @@
 		},
 		{
 			"ImportPath": "github.com/intervention-engine/hdsfhir",
-			"Comment": "fhir_dstu1-32-g8dcee3b",
-			"Rev": "8dcee3b02d3094dd9da2e0f430068864230b4041"
+			"Comment": "fhir_dstu1-33-ge44944b",
+			"Rev": "e44944b58c454c678d41653a6cb5ca43122bf42e"
 		},
 		{
 			"ImportPath": "github.com/intervention-engine/ie/models",

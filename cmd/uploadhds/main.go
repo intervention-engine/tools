@@ -34,6 +34,10 @@ func main() {
 			Name:  "single, s",
 			Usage: "Path to the a single JSON file",
 		},
+		cli.BoolFlag{
+			Name:  "conditional, c",
+			Usage: "Indicates that data should be uploaded using conditional updates",
+		},
 	}
 	app.Action = func(c *cli.Context) {
 		offset := c.Int("offset")
@@ -81,7 +85,7 @@ func main() {
 				}
 
 				// Convert the patient bundle to JSON data
-				data, err := json.Marshal(patient.FHIRTransactionBundle())
+				data, err := json.Marshal(patient.FHIRTransactionBundle(c.Bool("conditional")))
 				if err != nil {
 					panic("Couldn't convert FHIR patient bundle to JSON data: " + err.Error())
 				}
