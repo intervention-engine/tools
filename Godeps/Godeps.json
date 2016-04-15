@@ -3,7 +3,10 @@
 	"GoVersion": "go1.6",
 	"GodepVersion": "v60",
 	"Packages": [
-		"./..."
+		"github.com/intervention-engine/tools/cmd/generate",
+		"github.com/intervention-engine/tools/cmd/ieuser",
+		"github.com/intervention-engine/tools/cmd/uploadfhir",
+		"github.com/intervention-engine/tools/cmd/uploadhds"
 	],
 	"Deps": [
 		{
@@ -80,6 +83,11 @@
 		{
 			"ImportPath": "github.com/mattn/go-isatty",
 			"Rev": "56b76bdf51f7708750eac80fa38b952bb9f32639"
+		},
+		{
+			"ImportPath": "github.com/satori/go.uuid",
+			"Comment": "v1.0.0",
+			"Rev": "f9ab0dce87d815821e221626b772e3475a0d2749"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/bcrypt",
