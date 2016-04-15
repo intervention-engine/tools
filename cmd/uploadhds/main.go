@@ -1,13 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/codegangsta/cli"
-	"github.com/intervention-engine/fhir/upload"
-	"github.com/intervention-engine/hdsfhir"
 	"io/ioutil"
+	"net/http"
 	"os"
+
+	"github.com/codegangsta/cli"
+	"github.com/intervention-engine/fhir/models"
+	"github.com/intervention-engine/hdsfhir"
 )
 
 func main() {
@@ -76,7 +79,27 @@ func main() {
 				for _, proc := range patient.Procedures {
 					proc.StartTime = hdsfhir.UnixTime(proc.StartTime.Time().AddDate(offset, 0, 0).Unix())
 				}
-				upload.UploadResources(patient.FHIRModels(), fhirUrl)
+
+				// Convert the patient bundle to JSON data
+				data, err := json.Marshal(patient.FHIRTransactionBundle())
+				if err != nil {
+					panic("Couldn't convert FHIR patient bundle to JSON data: " + err.Error())
+				}
+
+				// Post the data
+				res, err := http.Post(fhirUrl+"/", "application/json", bytes.NewBuffer(data))
+				if err != nil {
+					panic("Couldn't upload FHIR patient bundle: " + err.Error())
+				}
+
+				// Decode the response
+				decoder := json.NewDecoder(res.Body)
+				responseBundle := &models.Bundle{}
+				err = decoder.Decode(responseBundle)
+				if err != nil {
+					panic("Uploaded FHIR patient bundle, but couldn't process response: " + err.Error())
+				}
+				fmt.Printf("Successfully uploaded patient bundle with %d resources\n", *responseBundle.Total)
 			}
 
 		}

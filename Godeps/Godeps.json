@@ -1,7 +1,7 @@
 {
 	"ImportPath": "github.com/intervention-engine/tools",
 	"GoVersion": "go1.6",
-	"GodepVersion": "v58",
+	"GodepVersion": "v60",
 	"Packages": [
 		"./..."
 	],
@@ -37,8 +37,8 @@
 		},
 		{
 			"ImportPath": "github.com/intervention-engine/hdsfhir",
-			"Comment": "fhir_dstu1-28-g1170f6e",
-			"Rev": "1170f6e15506ca4f37843bc9e359393408cb037c"
+			"Comment": "fhir_dstu1-32-g8dcee3b",
+			"Rev": "8dcee3b02d3094dd9da2e0f430068864230b4041"
 		},
 		{
 			"ImportPath": "github.com/intervention-engine/ie/models",
