@@ -3,24 +3,23 @@ package server
 import (
 	"log"
 
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2"
 )
 
 type FHIRServer struct {
 	DatabaseHost     string
-	Echo             *echo.Echo
-	MiddlewareConfig map[string][]echo.Middleware
+	Engine           *gin.Engine
+	MiddlewareConfig map[string][]gin.HandlerFunc
 }
 
-func (f *FHIRServer) AddMiddleware(key string, middleware echo.Middleware) {
+func (f *FHIRServer) AddMiddleware(key string, middleware gin.HandlerFunc) {
 	f.MiddlewareConfig[key] = append(f.MiddlewareConfig[key], middleware)
 }
 
 func NewServer(databaseHost string) *FHIRServer {
-	server := &FHIRServer{DatabaseHost: databaseHost, MiddlewareConfig: make(map[string][]echo.Middleware)}
-	server.Echo = echo.New()
+	server := &FHIRServer{DatabaseHost: databaseHost, MiddlewareConfig: make(map[string][]gin.HandlerFunc)}
+	server.Engine = gin.Default()
 	return server
 }
 
@@ -28,17 +27,16 @@ func (f *FHIRServer) Run(config Config) {
 	var err error
 
 	// Setup the database
-	if MongoSession, err = mgo.Dial(f.DatabaseHost); err != nil {
+	session, err := mgo.Dial(f.DatabaseHost)
+	if err != nil {
 		panic(err)
 	}
 	log.Println("Connected to mongodb")
-	defer MongoSession.Close()
+	defer session.Close()
 
-	Database = MongoSession.DB("fhir")
+	Database = session.DB("fhir")
 
-	if config.UseLoggingMiddleware {
-		f.Echo.Use(middleware.Logger())
-	}
-	RegisterRoutes(f.Echo, f.MiddlewareConfig, config)
-	f.Echo.Run(":3001")
+	RegisterRoutes(f.Engine, f.MiddlewareConfig, NewMongoDataAccessLayer(Database), config)
+
+	f.Engine.Run(":3001")
 }
