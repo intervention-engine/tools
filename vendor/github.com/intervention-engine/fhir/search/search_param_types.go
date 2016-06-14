@@ -117,11 +117,20 @@ func (q *Query) Options() *QueryOptions {
 				options.Offset = offset
 			}
 		case SortParam:
-			sortParam, ok := SearchParameterDictionary[q.Resource][queryParam.Value]
-			if !ok {
-				panic(createInvalidSearchError("MSG_PARAM_INVALID", "Parameter \"_sort\" content is invalid"))
+			// The following supports both DSTU2-style sorts and STU3-style sorts
+			keys := strings.Split(queryParam.Value, ",")
+			for _, key := range keys {
+				desc := strings.HasPrefix(key, "-") || modifier == "desc"
+				sortParam, ok := SearchParameterDictionary[q.Resource][strings.TrimPrefix(key, "-")]
+				if !ok {
+					panic(createInvalidSearchError("MSG_PARAM_INVALID", "Parameter \"_sort\" content is invalid"))
+				}
+				options.Sort = append(options.Sort, SortOption{Descending: desc, Parameter: sortParam})
 			}
-			options.Sort = append(options.Sort, SortOption{Descending: modifier == "desc", Parameter: sortParam})
+			// If this was an STU3-style sort, remember that so we reconstruct the query URL correctly
+			if len(keys) > 1 || strings.HasPrefix(queryParam.Value, "-") {
+				options.IsSTU3Sort = true
+			}
 		case IncludeParam:
 			incls := strings.Split(queryParam.Value, ":")
 			if len(incls) < 2 || len(incls) > 3 {
@@ -222,6 +231,7 @@ type QueryOptions struct {
 	Sort       []SortOption
 	Include    []IncludeOption
 	RevInclude []RevIncludeOption
+	IsSTU3Sort bool
 }
 
 // NewQueryOptions constructs a new QueryOptions with default values (offset = 0, Count = 100)
@@ -232,12 +242,24 @@ func NewQueryOptions() *QueryOptions {
 // URLQueryParameters returns URLQueryParameters representing the query options.
 func (o *QueryOptions) URLQueryParameters() URLQueryParameters {
 	var queryParams URLQueryParameters
-	for _, sort := range o.Sort {
-		sortParamKey := SortParam
-		if sort.Descending {
-			sortParamKey += ":desc"
+	if o.IsSTU3Sort {
+		keys := make([]string, len(o.Sort))
+		for i := range o.Sort {
+			if o.Sort[i].Descending {
+				keys[i] = fmt.Sprintf("-%s", o.Sort[i].Parameter.Name)
+			} else {
+				keys[i] = o.Sort[i].Parameter.Name
+			}
 		}
-		queryParams.Add(sortParamKey, sort.Parameter.Name)
+		queryParams.Add(SortParam, strings.Join(keys, ","))
+	} else {
+		for _, sort := range o.Sort {
+			sortParamKey := SortParam
+			if sort.Descending {
+				sortParamKey += ":desc"
+			}
+			queryParams.Add(sortParamKey, sort.Parameter.Name)
+		}
 	}
 	queryParams.Set(OffsetParam, strconv.Itoa(o.Offset))
 	queryParams.Set(CountParam, strconv.Itoa(o.Count))
@@ -273,6 +295,14 @@ type SortOption struct {
 type SearchParam interface {
 	getInfo() SearchParamInfo
 	getQueryParamAndValue() (string, string)
+}
+
+// SearchParamData represents the data associated to an instance of a search param
+type SearchParamData struct {
+	Modifier string
+	Chain    string
+	Prefix   Prefix
+	Value    string
 }
 
 // SearchParamInfo contains information about a FHIR search parameter,
@@ -313,6 +343,21 @@ func (s SearchParamInfo) CreateSearchParam(paramStr string) SearchParam {
 		return ParseTokenParam(paramStr, s)
 	case "uri":
 		return ParseURIParam(paramStr, s)
+	default:
+		// Check for a custom search parameter
+		if parser, err := GlobalRegistry().LookupParameterParser(s.Type); err == nil {
+			data := SearchParamData{
+				Modifier: s.Modifier,
+				Chain:    s.Postfix,
+				Prefix:   s.Prefix,
+				Value:    paramStr,
+			}
+			param, err := parser(s, data)
+			if err != nil {
+				panic(createInternalServerError("MSG_PARAM_INVALID", fmt.Sprintf("Parameter \"%s\" content is invalid", s.Name)))
+			}
+			return param
+		}
 	}
 	return nil
 }
@@ -757,7 +802,7 @@ func findReferencedType(typeFromVal string, info SearchParamInfo) string {
 			}
 			valid = (t == target)
 		}
-	} else if len(info.Targets) > 0 {
+	} else if len(info.Targets) > 1 {
 		for _, target := range info.Targets {
 			if t == target {
 				valid = true
@@ -959,6 +1004,8 @@ const (
 	LT Prefix = "lt"
 	GE Prefix = "ge"
 	LE Prefix = "le"
+	SA Prefix = "sa"
+	EB Prefix = "eb"
 	AP Prefix = "ap"
 )
 
@@ -971,7 +1018,7 @@ func (p Prefix) String() string {
 // prefix and value.
 func ExtractPrefixAndValue(s string) (Prefix, string) {
 	prefix := EQ
-	for _, p := range []Prefix{EQ, NE, GT, LT, GE, LE, AP} {
+	for _, p := range []Prefix{EQ, NE, GT, LT, GE, LE, SA, EB, AP} {
 		if strings.HasPrefix(s, p.String()) {
 			prefix = p
 			break
