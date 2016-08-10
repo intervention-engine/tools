@@ -1,7 +1,7 @@
 Tools [![Build Status](https://travis-ci.org/intervention-engine/tools.svg?branch=master)](https://travis-ci.org/intervention-engine/tools)
 ===========================================================================================================================================
 
-The *tools* repository contains command-line tools that are helpful (or sometimes necessary) for the [Intervention Engine](https://github.com/intervention-engine/ie) project. These include tools for managing Intervention Engine users, generating and uploading synthetic patient data, uploading FHIR bundles, and converting and uploading Health Data Standards (HDS) records.
+The *tools* repository contains command-line tools that are helpful (or sometimes necessary) for the [Intervention Engine](https://github.com/intervention-engine/ie) project. These include tools for generating and uploading synthetic patient data, uploading FHIR bundles, and converting and uploading Health Data Standards (HDS) records.
 
 Building and Running tools Locally
 ----------------------------------
@@ -12,30 +12,9 @@ For information related specifically to building and running the tools in this r
 
 -	(Prerequisite) [Install Git](https://github.com/intervention-engine/ie/blob/master/docs/dev_install.md#install-git)
 -	(Prerequisite) [Install Go](https://github.com/intervention-engine/ie/blob/master/docs/dev_install.md#install-go)
--	(Prerequisite for *ieuser*) [Install MongoDB](https://github.com/intervention-engine/ie/blob/master/docs/dev_install.md#install-mongodb)
--	(Prerequisite for *ieuser*) [Run MongoDB](https://github.com/intervention-engine/ie/blob/master/docs/dev_install.md#run-mongodb)
 -	(Prerequisite) [Clone tools Repository](https://github.com/intervention-engine/ie/blob/master/docs/dev_install.md#clone-tools-repository)
 
 Go only allows for one `main` function per package, therefore the *tools* repo puts each tool into a separate package. This makes building and installing a little more difficult, but allows us to have all the tools in a single repo.
-
-ieuser
-------
-
-The *ieuser* tool is used to add, remove, and edit Intervention Engine users in the database. In order to use this tool, the MongoDB database must be running. Before you can run the *ieuser* tool, you must install its dependencies via `go get` and build the `ieuser` executable:
-
-```
-$ cd $GOPATH/src/github.com/intervention-engine/tools/cmd/ieuser
-$ go get
-$ go build
-```
-
-The following example uses the *ieuser* executable to create the user *bob* with the password *mypassword*:
-
-```
-$ ./ieuser add bob mypassword
-```
-
-To get usage information, run `ieuser` with no arguments.
 
 generate
 --------

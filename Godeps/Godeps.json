@@ -4,7 +4,6 @@
 	"GodepVersion": "v63",
 	"Packages": [
 		"github.com/intervention-engine/tools/cmd/generate",
-		"github.com/intervention-engine/tools/cmd/ieuser",
 		"github.com/intervention-engine/tools/cmd/uploadfhir",
 		"github.com/intervention-engine/tools/cmd/uploadhds"
 	],
@@ -15,40 +14,11 @@
 			"Rev": "c31a7975863e7810c92e2e288a9ab074f9a88f29"
 		},
 		{
-			"ImportPath": "github.com/gin-gonic/gin",
-			"Comment": "v1.0rc1-248-g4a6bc4a",
-			"Rev": "4a6bc4aac4607e253bcda67c8c5bcda693d2388e"
-		},
-		{
-			"ImportPath": "github.com/gin-gonic/gin/binding",
-			"Comment": "v1.0rc1-248-g4a6bc4a",
-			"Rev": "4a6bc4aac4607e253bcda67c8c5bcda693d2388e"
-		},
-		{
-			"ImportPath": "github.com/gin-gonic/gin/render",
-			"Comment": "v1.0rc1-248-g4a6bc4a",
-			"Rev": "4a6bc4aac4607e253bcda67c8c5bcda693d2388e"
-		},
-		{
-			"ImportPath": "github.com/golang/protobuf/proto",
-			"Rev": "8d92cf5fc15a4382f8964b08e1f42a75c0591aa3"
-		},
-		{
 			"ImportPath": "github.com/icrowley/fake",
 			"Rev": "84bff6d01560fb0b5a396ba29534e93fd00d09c6"
 		},
 		{
 			"ImportPath": "github.com/intervention-engine/fhir/models",
-			"Comment": "DSTU1-153-g508ab35",
-			"Rev": "508ab351dce287395f188bac2578fe26c0cd61e9"
-		},
-		{
-			"ImportPath": "github.com/intervention-engine/fhir/search",
-			"Comment": "DSTU1-153-g508ab35",
-			"Rev": "508ab351dce287395f188bac2578fe26c0cd61e9"
-		},
-		{
-			"ImportPath": "github.com/intervention-engine/fhir/server",
 			"Comment": "DSTU1-153-g508ab35",
 			"Rev": "508ab351dce287395f188bac2578fe26c0cd61e9"
 		},
@@ -63,11 +33,6 @@
 			"Rev": "eb4167c1ed8b01e4ce6283621c3a55dc16133477"
 		},
 		{
-			"ImportPath": "github.com/intervention-engine/ie/models",
-			"Comment": "DSTU1-161-gea3f60d",
-			"Rev": "ea3f60daf643b3602d6138f54cdccd3f79f9f25b"
-		},
-		{
 			"ImportPath": "github.com/intervention-engine/ptgen",
 			"Rev": "db3026e5eac72c788be17bdcb40da87ba90f7c35"
 		},
@@ -76,52 +41,16 @@
 			"Rev": "2bb1b664bcff821e02b2a0644cd29c7e824d54f8"
 		},
 		{
-			"ImportPath": "github.com/manucorporat/sse",
-			"Rev": "ee05b128a739a0fb76c7ebd3ae4810c1de808d6d"
-		},
-		{
 			"ImportPath": "github.com/satori/go.uuid",
 			"Comment": "v1.0.0",
 			"Rev": "f9ab0dce87d815821e221626b772e3475a0d2749"
-		},
-		{
-			"ImportPath": "golang.org/x/crypto/bcrypt",
-			"Rev": "d67eb63455fa4d6fca5802332d86f1f204017e00"
-		},
-		{
-			"ImportPath": "golang.org/x/crypto/blowfish",
-			"Rev": "d67eb63455fa4d6fca5802332d86f1f204017e00"
-		},
-		{
-			"ImportPath": "golang.org/x/net/context",
-			"Rev": "5df5483e0518a11a6ef1e894c70236eb3f639557"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/container/intsets",
 			"Rev": "758728c4b28cfbac299730969ef8f655c4761283"
 		},
 		{
-			"ImportPath": "gopkg.in/go-playground/validator.v8",
-			"Comment": "v8.17.1",
-			"Rev": "014792cf3e266caff1e916876be12282b33059e0"
-		},
-		{
-			"ImportPath": "gopkg.in/mgo.v2",
-			"Comment": "r2015.12.06-2-g03c9f3e",
-			"Rev": "03c9f3ee4c14c8e51ee521a6a7d0425658dd6f64"
-		},
-		{
 			"ImportPath": "gopkg.in/mgo.v2/bson",
-			"Comment": "r2015.12.06-2-g03c9f3e",
-			"Rev": "03c9f3ee4c14c8e51ee521a6a7d0425658dd6f64"
-		},
-		{
-			"ImportPath": "gopkg.in/mgo.v2/internal/sasl",
-			"Comment": "r2015.12.06-2-g03c9f3e",
-			"Rev": "03c9f3ee4c14c8e51ee521a6a7d0425658dd6f64"
-		},
-		{
-			"ImportPath": "gopkg.in/mgo.v2/internal/scram",
 			"Comment": "r2015.12.06-2-g03c9f3e",
 			"Rev": "03c9f3ee4c14c8e51ee521a6a7d0425658dd6f64"
 		}
