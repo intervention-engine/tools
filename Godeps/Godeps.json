@@ -29,8 +29,8 @@
 		},
 		{
 			"ImportPath": "github.com/intervention-engine/hdsfhir",
-			"Comment": "fhir_dstu1-40-geb4167c",
-			"Rev": "eb4167c1ed8b01e4ce6283621c3a55dc16133477"
+			"Comment": "fhir_dstu1-44-g303303a",
+			"Rev": "303303aa19f8aa3c63c143e95c050c60f176ed7a"
 		},
 		{
 			"ImportPath": "github.com/intervention-engine/ptgen",
