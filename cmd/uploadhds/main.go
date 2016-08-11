@@ -18,10 +18,6 @@ func main() {
 	app.Name = "upload"
 	app.Usage = "Convert health-data-standards JSON to FHIR JSON and upload it to a FHIR Server"
 	app.Flags = []cli.Flag{
-		cli.IntFlag{
-			Name:  "offset, o",
-			Usage: "How many years to offset dates by",
-		},
 		cli.StringFlag{
 			Name:  "fhir, f",
 			Usage: "URL for the FHIR server",
@@ -40,7 +36,6 @@ func main() {
 		},
 	}
 	app.Action = func(c *cli.Context) {
-		offset := c.Int("offset")
 		fhirUrl := c.String("fhir")
 		path := c.String("json")
 		singlePath := c.String("single")
@@ -66,23 +61,6 @@ func main() {
 					panic("Couldn't read the JSON file" + err.Error())
 				}
 				json.Unmarshal(jsonBlob, patient)
-				patient.BirthTime = hdsfhir.UnixTime(patient.BirthTime.Time().AddDate(offset, 0, 0).Unix())
-
-				for _, cond := range patient.Conditions {
-					cond.StartTime = hdsfhir.UnixTime(cond.StartTime.Time().AddDate(offset, 0, 0).Unix())
-				}
-				for _, enc := range patient.Encounters {
-					enc.StartTime = hdsfhir.UnixTime(enc.StartTime.Time().AddDate(offset, 0, 0).Unix())
-				}
-				for _, med := range patient.Medications {
-					med.StartTime = hdsfhir.UnixTime(med.StartTime.Time().AddDate(offset, 0, 0).Unix())
-				}
-				for _, vit := range patient.VitalSigns {
-					vit.StartTime = hdsfhir.UnixTime(vit.StartTime.Time().AddDate(offset, 0, 0).Unix())
-				}
-				for _, proc := range patient.Procedures {
-					proc.StartTime = hdsfhir.UnixTime(proc.StartTime.Time().AddDate(offset, 0, 0).Unix())
-				}
 
 				// Convert the patient bundle to JSON data
 				data, err := json.Marshal(patient.FHIRTransactionBundle(c.Bool("conditional")))
